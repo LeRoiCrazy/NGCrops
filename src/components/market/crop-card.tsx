@@ -55,7 +55,7 @@ export function CropCard({ item }: CropCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 min-w-0">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-muted-foreground">Prix actuel</p>
           <p className="text-lg font-semibold text-foreground">
@@ -81,7 +81,7 @@ export function CropCard({ item }: CropCardProps) {
 
         <Separator />
 
-        <div className="space-y-2">
+        <div className="space-y-2 min-w-0">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">
             Evolution des prix
           </p>
