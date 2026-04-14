@@ -1,17 +1,21 @@
 import { Suspense } from "react";
 
+import {
+  getLatestMarketSnapshot,
+  syncLatestMarketSnapshot,
+} from "@/application/market-snapshots";
 import { CropCard } from "@/components/market/crop-card";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buildCropMarketItems } from "@/lib/market";
-import { fetchYoxoCerealMarket } from "@/lib/yoxo";
 
 type MarketLoadResult =
   | {
       ok: true;
       server: string;
       snapshotDate: string;
+      source: "mongodb" | "yoxo";
       items: ReturnType<typeof buildCropMarketItems>;
     }
   | {
@@ -20,14 +24,29 @@ type MarketLoadResult =
     };
 
 async function loadMarketData(): Promise<MarketLoadResult> {
+  const defaultServer = process.env.NEXT_PUBLIC_DEFAULT_SERVER?.trim() || "mocha";
+
   try {
-    const marketResponse = await fetchYoxoCerealMarket("mocha");
+    const snapshot = await getLatestMarketSnapshot(defaultServer);
+
+    if (snapshot) {
+      return {
+        ok: true,
+        server: snapshot.server,
+        snapshotDate: snapshot.snapshotDate,
+        source: "mongodb",
+        items: buildCropMarketItems(snapshot.payload),
+      };
+    }
+
+    const { snapshot: freshSnapshot } = await syncLatestMarketSnapshot(defaultServer);
 
     return {
       ok: true,
-      server: marketResponse.metadata.server,
-      snapshotDate: marketResponse.metadata.date,
-      items: buildCropMarketItems(marketResponse),
+      server: freshSnapshot.metadata.server,
+      snapshotDate: freshSnapshot.metadata.date,
+      source: "yoxo",
+      items: buildCropMarketItems(freshSnapshot),
     };
   } catch (error) {
     return {
@@ -71,6 +90,9 @@ async function MarketContent() {
           <Badge>NGCrops</Badge>
           <Badge variant="outline">Serveur: {result.server}</Badge>
           <Badge variant="secondary">Snapshot: {result.snapshotDate}</Badge>
+          <Badge variant="outline">
+            Source: {result.source === "mongodb" ? "MongoDB" : "Yoxo live"}
+          </Badge>
         </div>
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
           Marche global des cereals

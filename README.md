@@ -29,9 +29,15 @@ cp .env.example .env.local
 Variables requises:
 
 ```env
+MONGODB_URI=
+MONGODB_DB_NAME=ngcrops
+
 YOXO_API_BASE_URL=https://api.yoxo.software
 YOXO_CLIENT_ID=
 YOXO_CLIENT_SECRET=
+
+NEXT_PUBLIC_DEFAULT_SERVER=mocha
+CRON_SECRET=
 ```
 
 Le client applique le flux OAuth2 Client Credentials documente par Yoxo:
@@ -39,6 +45,33 @@ Le client applique le flux OAuth2 Client Credentials documente par Yoxo:
 - puis appel API avec `Authorization: Bearer <access_token>`
 
 Les secrets ne doivent jamais etre hardcodes.
+
+## Snapshots MongoDB + Cron
+
+L'application lit d'abord les donnees depuis MongoDB pour eviter les appels API Yoxo a chaque visite.
+
+Route cron:
+- `GET /api/sync`
+- Protection: `Authorization: Bearer ${CRON_SECRET}`
+- Le cron saute automatiquement les jours pairs UTC
+- Le cron fait un upsert idempotent (1 snapshot max par serveur et date)
+
+Route health:
+- `GET /api/health`
+- Protection: `Authorization: Bearer ${CRON_SECRET}`
+- Retourne l'etat de fraicheur de la derniere snapshot MongoDB
+- Parametres optionnels: `server`, `maxAgeHours` (defaut: 72)
+
+Configuration Vercel:
+- `vercel.json` pointe sur `/api/sync` (tous les jours)
+- Definir la variable d'environnement `CRON_SECRET` dans Vercel
+
+En local, test manuel:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" "http://localhost:3000/api/sync?force=1"
+curl -H "Authorization: Bearer $CRON_SECRET" "http://localhost:3000/api/health"
+```
 
 ## Derniere date impaire
 
