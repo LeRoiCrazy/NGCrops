@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "NGCrops",
-  description: "NationsGlory cereal market snapshots dashboard",
+  description: "Dashboard simple des prix des cereals NationsGlory",
 };
 
 export default function RootLayout({
@@ -34,7 +34,9 @@ export default function RootLayout({
         "font-sans"
       )}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        {children}
+      </body>
     </html>
   );
 }
