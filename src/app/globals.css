@@ -87,12 +87,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html,
+  body {
+    background-color: var(--background);
+    background-image: none !important;
+  }
   body {
     @apply bg-background text-foreground;
-    background-image:
-      radial-gradient(circle at top, rgb(56 189 248 / 0.13), transparent 30%),
-      radial-gradient(circle at 20% 80%, rgb(16 185 129 / 0.1), transparent 35%),
-      linear-gradient(180deg, rgb(3 7 18), rgb(3 7 18));
   }
   html {
     @apply font-sans;

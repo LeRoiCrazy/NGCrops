@@ -45,6 +45,38 @@ export async function getLatestMarketSnapshot(server: string) {
   );
 }
 
+function formatIsoDate(date: Date) {
+  const year = date.getUTCFullYear();
+  const month = `${date.getUTCMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getUTCDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export async function hasPreviousWeekSnapshot(
+  server: string,
+  latestSnapshotDate: string
+) {
+  const collection = await getMarketSnapshotsCollection();
+  const anchor = new Date(`${latestSnapshotDate}T00:00:00.000Z`);
+
+  if (Number.isNaN(anchor.getTime())) {
+    return false;
+  }
+
+  const minDate = new Date(anchor.getTime() - 14 * 24 * 60 * 60 * 1000);
+  const maxDate = new Date(anchor.getTime() - 6 * 24 * 60 * 60 * 1000);
+
+  const existing = await collection.findOne({
+    server,
+    snapshotDate: {
+      $gte: formatIsoDate(minDate),
+      $lte: formatIsoDate(maxDate),
+    },
+  });
+
+  return Boolean(existing);
+}
+
 export async function upsertMarketSnapshot(
   payload: MarketSnapshotDocument
 ): Promise<SnapshotUpsertResult> {

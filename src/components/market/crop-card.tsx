@@ -20,6 +20,33 @@ type CropCardProps = {
   item: CropMarketItem;
 };
 
+function formatPercent(value: number | null) {
+  if (value === null || !Number.isFinite(value)) {
+    return "N/A";
+  }
+
+  const sign = value > 0 ? "+" : "";
+  return `${sign}${value.toFixed(1)}%`;
+}
+
+function trendLabel(value: "up" | "down" | "flat") {
+  if (value === "up") return "Hausse";
+  if (value === "down") return "Baisse";
+  return "Stable";
+}
+
+function confidenceColorClass(confidence: number) {
+  if (confidence >= 75) {
+    return "bg-emerald-500";
+  }
+
+  if (confidence >= 50) {
+    return "bg-amber-500";
+  }
+
+  return "bg-red-500";
+}
+
 function recommendationBadgeVariant(signal: CropMarketItem["recommendation"]["signal"]) {
   if (signal === "BUY") {
     return "default";
@@ -70,7 +97,10 @@ export function CropCard({ item }: CropCardProps) {
           <span className="text-xs text-muted-foreground">Serveur: mocha</span>
         </div>
 
-        <Progress value={item.recommendation.confidence}>
+        <Progress
+          value={item.recommendation.confidence}
+          indicatorClassName={confidenceColorClass(item.recommendation.confidence)}
+        >
           <ProgressLabel>Confiance</ProgressLabel>
           <span className="ml-auto text-xs text-muted-foreground tabular-nums">
             {item.recommendation.confidence}%
@@ -78,6 +108,27 @@ export function CropCard({ item }: CropCardProps) {
         </Progress>
 
         <p className="text-sm text-muted-foreground">{item.recommendation.reason}</p>
+
+        <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+          <p>
+            Position 14j: {item.recommendation.details.pricePosition14d !== null
+              ? `${(item.recommendation.details.pricePosition14d * 100).toFixed(0)}%`
+              : "N/A"}
+          </p>
+          <p>Stocks: {trendLabel(item.recommendation.details.stockTrend)}</p>
+          <p>Ventes: {trendLabel(item.recommendation.details.salesTrend)}</p>
+          <p>Delta prix: {formatPercent(item.recommendation.details.deltas.price.percent)}</p>
+        </div>
+
+        <p className="text-[11px] text-muted-foreground">
+          Semaine precedente: {item.recommendation.details.weekOverWeekUsed ? "prise en compte" : "ignoree (pas en BDD)"}
+        </p>
+
+        <ul className="list-disc space-y-1 pl-4 text-xs text-muted-foreground">
+          {item.recommendation.reasons.slice(0, 3).map((reason) => (
+            <li key={reason}>{reason}</li>
+          ))}
+        </ul>
 
         <Separator />
 

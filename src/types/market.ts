@@ -28,6 +28,23 @@ export type CropRecommendation = {
   signal: "BUY" | "HOLD" | "SELL";
   confidence: number;
   reason: string;
+  reasons: string[];
+  details: {
+    pricePosition14d: number | null;
+    weekOverWeekUsed: boolean;
+    stockTrend: "up" | "down" | "flat";
+    salesTrend: "up" | "down" | "flat";
+    weekOverWeek: {
+      priceAvgPercent: number | null;
+      salesAvgPercent: number | null;
+      stocksAvgPercent: number | null;
+    };
+    deltas: {
+      price: { absolute: number | null; percent: number | null };
+      sales: { absolute: number | null; percent: number | null };
+      stocks: { absolute: number | null; percent: number | null };
+    };
+  };
 };
 
 export type CropMarketItem = {
@@ -36,6 +53,8 @@ export type CropMarketItem = {
   cropImage?: string;
   currentPrice: number | null;
   priceHistory: PricePoint[];
+  salesHistory: PricePoint[];
+  stocksHistory: PricePoint[];
   recommendation: CropRecommendation;
 };
 

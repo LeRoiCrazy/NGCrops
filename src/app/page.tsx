@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 
 import {
+  hasPreviousWeekSnapshot,
   getLatestMarketSnapshot,
   syncLatestMarketSnapshot,
 } from "@/application/market-snapshots";
@@ -30,23 +31,36 @@ async function loadMarketData(): Promise<MarketLoadResult> {
     const snapshot = await getLatestMarketSnapshot(defaultServer);
 
     if (snapshot) {
+      const includePreviousWeekSignals = await hasPreviousWeekSnapshot(
+        snapshot.server,
+        snapshot.snapshotDate
+      );
+
       return {
         ok: true,
         server: snapshot.server,
         snapshotDate: snapshot.snapshotDate,
         source: "mongodb",
-        items: buildCropMarketItems(snapshot.payload),
+        items: buildCropMarketItems(snapshot.payload, {
+          includePreviousWeekSignals,
+        }),
       };
     }
 
     const { snapshot: freshSnapshot } = await syncLatestMarketSnapshot(defaultServer);
+    const includePreviousWeekSignals = await hasPreviousWeekSnapshot(
+      freshSnapshot.metadata.server,
+      freshSnapshot.metadata.date
+    );
 
     return {
       ok: true,
       server: freshSnapshot.metadata.server,
       snapshotDate: freshSnapshot.metadata.date,
       source: "yoxo",
-      items: buildCropMarketItems(freshSnapshot),
+      items: buildCropMarketItems(freshSnapshot, {
+        includePreviousWeekSignals,
+      }),
     };
   } catch (error) {
     return {
