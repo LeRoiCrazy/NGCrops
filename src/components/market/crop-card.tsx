@@ -42,13 +42,13 @@ export function CropCard({ item }: CropCardProps) {
             <CardTitle className="text-base sm:text-lg">{item.cropLabel}</CardTitle>
           </div>
           {item.cropImage ? (
-            <div className="relative h-11 w-11 overflow-hidden rounded-md border border-border">
+            <div className="relative h-[31px] w-[68px] overflow-hidden rounded-md border border-border bg-black/20">
               <Image
                 src={item.cropImage}
                 alt={item.cropLabel}
                 fill
-                sizes="44px"
-                className="object-cover"
+                sizes="68px"
+                className="object-contain"
               />
             </div>
           ) : null}
