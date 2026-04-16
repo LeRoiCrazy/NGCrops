@@ -60,7 +60,7 @@ export function SellModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Confirmer la vente</DialogTitle>
         </DialogHeader>
@@ -140,7 +140,7 @@ export function SellModal({
             <div className="flex gap-2 items-start bg-red-500/10 border border-red-500/20 rounded p-3">
               <HugeiconsIcon 
                 icon={AlertTriangle} 
-                className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" 
+                className="h-5 w-5 shrink-0 mt-0.5 text-red-500" 
               />
               <p className="text-sm text-red-400">
                 Attention: Tu vas perdre de l'argent en vendant maintenant. Les taxes
@@ -154,7 +154,7 @@ export function SellModal({
             <div className="flex gap-2 items-start bg-emerald-500/10 border border-emerald-500/20 rounded p-3">
               <HugeiconsIcon 
                 icon={CheckmarkBadge01Icon} 
-                className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" 
+                className="h-5 w-5 shrink-0 mt-0.5 text-emerald-500" 
               />
               <p className="text-sm text-emerald-400">
                 Bon investissement! Tu vas réaliser un profit de{" "}

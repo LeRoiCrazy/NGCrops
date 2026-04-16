@@ -63,18 +63,6 @@ export default async function PortfolioPage() {
 
   const { portfolioItems, trades, error } = await loadPortfolioData(userId);
 
-  const handleAddSilo = async (data: {
-    cropName: string;
-    quantité: number;
-    prixAchat: number;
-    dateAchat: Date;
-  }) => {
-    "use server";
-
-    // This will be called from the client component
-    // We'll implement this in a server action
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -103,7 +91,7 @@ export default async function PortfolioPage() {
                 Historique ({trades.length})
               </TabsTrigger>
             </TabsList>
-            <SiloForm onSubmit={handleAddSilo} />
+            <SiloForm />
           </div>
 
           {/* Silos Tab */}
@@ -157,7 +145,7 @@ export default async function PortfolioPage() {
               </div>
             )}
 
-            <SilosTable items={portfolioItems} onRefresh={async () => {}} />
+            <SilosTable items={portfolioItems} />
           </TabsContent>
 
           {/* Historique Tab */}

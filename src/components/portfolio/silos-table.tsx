@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PortfolioItem } from "@/types/silo";
 import { formatUSD, formatPercent, getPortfolioBadgeColorAfterTax } from "@/lib/portfolio-calculations";
 import { Badge } from "@/components/ui/badge";
@@ -12,10 +13,10 @@ import { SellModal } from "./sell-modal";
 interface SilosTableProps {
   items: PortfolioItem[];
   isLoading?: boolean;
-  onRefresh: () => Promise<void>;
 }
 
-export function SilosTable({ items, isLoading = false, onRefresh }: SilosTableProps) {
+export function SilosTable({ items, isLoading = false }: SilosTableProps) {
+  const router = useRouter();
   const [sellingSiloId, setSellingSiloId] = useState<string | null>(null);
 
   if (isLoading) {
@@ -92,7 +93,7 @@ export function SilosTable({ items, isLoading = false, onRefresh }: SilosTablePr
           onClose={() => setSellingSiloId(null)}
           onSuccess={() => {
             setSellingSiloId(null);
-            onRefresh();
+            router.refresh();
           }}
         />
       )}

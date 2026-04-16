@@ -1,50 +1,70 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectGroup,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { getGroupedCropOptions } from "@/lib/crops";
 
-const CROPS = ["Blé", "Maïs", "Orge", "Soja", "Riz", "Avoine"];
+const cropGroups = getGroupedCropOptions();
 
-interface SiloFormProps {
-  onSubmit: (data: {
-    cropName: string;
-    quantité: number;
-    prixAchat: number;
-    dateAchat: Date;
-  }) => Promise<void>;
-}
-
-export function SiloForm({ onSubmit }: SiloFormProps) {
+export function SiloForm() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [cropName, setCropName] = useState("");
   const [quantité, setQuantité] = useState("");
   const [prixAchat, setPrixAchat] = useState("");
-  const [dateAchat, setDateAchat] = useState(
-    new Date().toISOString().split("T")[0]
-  );
+  const [dateAchat, setDateAchat] = useState<Date | undefined>(new Date());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
-      await onSubmit({
-        cropName,
-        quantité: Number(quantité),
-        prixAchat: Number(prixAchat),
-        dateAchat: new Date(dateAchat),
+      const response = await fetch("/api/portfolio/silos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cropName,
+          quantité: Number(quantité),
+          prixAchat: Number(prixAchat),
+          dateAchat: dateAchat ? format(dateAchat, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
+        }),
       });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || "Erreur lors de l'ajout du silo");
+      }
 
       // Reset form
       setCropName("");
       setQuantité("");
       setPrixAchat("");
-      setDateAchat(new Date().toISOString().split("T")[0]);
+      setDateAchat(new Date());
       setIsOpen(false);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
       setIsLoading(false);
     }
@@ -52,10 +72,8 @@ export function SiloForm({ onSubmit }: SiloFormProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>
-        <Button>Ajouter un silo</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogTrigger render={<Button type="button">Ajouter un silo</Button>} />
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Ajouter un nouveau silo</DialogTitle>
         </DialogHeader>
@@ -65,20 +83,24 @@ export function SiloForm({ onSubmit }: SiloFormProps) {
             <label htmlFor="crop" className="text-sm font-medium">
               Céréale
             </label>
-            <select
-              id="crop"
-              value={cropName}
-              onChange={(e) => setCropName(e.target.value)}
-              className="flex w-full rounded-md border border-input bg-input/20 px-2 py-1.5 text-xs/relaxed outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:opacity-50 dark:bg-input/30"
-              required
-            >
-              <option value="">Sélectionne une céréale</option>
-              {CROPS.map((crop) => (
-                <option key={crop} value={crop}>
-                  {crop}
-                </option>
-              ))}
-            </select>
+            <Select value={cropName} onValueChange={(value) => setCropName(value ?? "")}>
+              <SelectTrigger className="w-full" id="crop">
+                <SelectValue placeholder="Sélectionne une céréale" />
+              </SelectTrigger>
+              <SelectContent>
+                {cropGroups.map((group, groupIndex) => (
+                  <SelectGroup key={group.label}>
+                    <SelectLabel>{group.label}</SelectLabel>
+                    {group.options.map((crop) => (
+                      <SelectItem key={crop.value} value={crop.value}>
+                        {crop.label}
+                      </SelectItem>
+                    ))}
+                    {groupIndex < cropGroups.length - 1 && <SelectSeparator />}
+                  </SelectGroup>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
@@ -117,13 +139,40 @@ export function SiloForm({ onSubmit }: SiloFormProps) {
             <label htmlFor="dateAchat" className="text-sm font-medium">
               Date d'achat
             </label>
-            <Input
-              id="dateAchat"
-              type="date"
-              value={dateAchat}
-              onChange={(e) => setDateAchat(e.target.value)}
-            />
+            <Popover>
+                <PopoverTrigger
+                  render={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      id="dateAchat"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      {dateAchat ? format(dateAchat, "PPP", { locale: fr }) : <span>Choisir une date</span>}
+                    </Button>
+                  }
+                />
+                <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  className="rounded-lg border"
+                  captionLayout="dropdown"
+                  locale={fr}
+                  mode="single"
+                  selected={dateAchat}
+                  onSelect={setDateAchat}
+                  defaultMonth={dateAchat}
+                  disabled={{ after: new Date() }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded p-3">
+              <p className="text-sm text-red-400">{error}</p>
+            </div>
+          )}
 
           <div className="flex gap-2 pt-4">
             <Button

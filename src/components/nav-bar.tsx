@@ -1,23 +1,10 @@
-"use client";
-
 import Link from "next/link";
 import { auth } from "@/auth";
 import { signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { Session } from "next-auth";
 
-export function NavBar() {
-  const [session, setSession] = useState<Session | null>(null);
-
-  useEffect(() => {
-    const getSession = async () => {
-      const { auth: getAuth } = await import("@/auth");
-      const sess = await getAuth();
-      setSession(sess);
-    };
-    getSession();
-  }, []);
+export async function NavBar() {
+  const session = await auth();
 
   return (
     <nav className="border-b border-border bg-card/50 backdrop-blur sticky top-0 z-40">
