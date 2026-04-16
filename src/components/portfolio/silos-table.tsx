@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PortfolioItem } from "@/types/silo";
+import { PortfolioItemDTO } from "@/types/silo";
 import { formatUSD, formatPercent, getPortfolioBadgeColorAfterTax } from "@/lib/portfolio-calculations";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { SellModal } from "./sell-modal";
 
 
 interface SilosTableProps {
-  items: PortfolioItem[];
+  items: PortfolioItemDTO[];
   isLoading?: boolean;
 }
 
@@ -52,7 +52,7 @@ export function SilosTable({ items, isLoading = false }: SilosTableProps) {
           <TableBody>
             {items.map((item) => (
               <TableRow key={item._id} className="border-border hover:bg-muted/50">
-                <TableCell className="font-medium">{item.cropName}</TableCell>
+                <TableCell className="font-medium">{item.cropLabel}</TableCell>
                 <TableCell className="text-right">{item.quantité}</TableCell>
                 <TableCell className="text-right">{formatUSD(item.prixAchat)}</TableCell>
                 <TableCell className="text-right">{formatUSD(item.prixActuel)}</TableCell>
@@ -66,7 +66,11 @@ export function SilosTable({ items, isLoading = false }: SilosTableProps) {
                     {formatPercent(item.pourcentGainPerte)}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right font-medium">
+                <TableCell
+                  className={`text-right font-medium ${
+                    item.bénéficeApresTaxes >= 0 ? "text-emerald-400" : "text-red-400"
+                  }`}
+                >
                   {item.bénéficeApresTaxes >= 0 ? "+" : ""}
                   {formatUSD(item.bénéficeApresTaxes)}
                 </TableCell>

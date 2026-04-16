@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PortfolioItem } from "@/types/silo";
+import { PortfolioItemDTO } from "@/types/silo";
 import { formatUSD, formatPercent } from "@/lib/portfolio-calculations";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -14,7 +14,7 @@ import { AlertTriangle, CheckmarkBadge01Icon } from "@hugeicons/core-free-icons"
 
 interface SellModalProps {
   siloId: string;
-  item: PortfolioItem;
+  item: PortfolioItemDTO;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
@@ -70,7 +70,7 @@ export function SellModal({
           {/* Silo Details */}
           <div className="space-y-2">
             <div className="text-sm text-muted-foreground">Céréale</div>
-            <div className="text-lg font-semibold">{item.cropName}</div>
+            <div className="text-lg font-semibold">{item.cropLabel}</div>
           </div>
 
           <Separator />

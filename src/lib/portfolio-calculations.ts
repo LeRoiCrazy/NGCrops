@@ -1,5 +1,11 @@
 import { Silo, PortfolioItem } from "@/types/silo";
 
+export const TONNES_PER_SILO = 5;
+
+export function convertPricePerTonneToPerSilo(pricePerTonne: number): number {
+  return pricePerTonne * TONNES_PER_SILO;
+}
+
 /**
  * Calcule les valeurs du portfolio d'un silo
  * En tenant compte du prix actuel du marché et de la taxe serveur (20%)

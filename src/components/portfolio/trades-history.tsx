@@ -1,13 +1,13 @@
 "use client";
 
-import { Trade } from "@/types/silo";
+import { TradeDTO } from "@/types/silo";
 import { formatUSD, formatPercent } from "@/lib/portfolio-calculations";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
 
 interface TradesHistoryProps {
-  trades: Trade[];
+  trades: TradeDTO[];
   isLoading?: boolean;
 }
 
@@ -47,7 +47,7 @@ export function TradesHistory({ trades, isLoading = false }: TradesHistoryProps)
 
             return (
               <TableRow key={trade._id} className="border-border hover:bg-muted/50">
-                <TableCell className="font-medium">{trade.cropName}</TableCell>
+                <TableCell className="font-medium">{trade.cropLabel}</TableCell>
                 <TableCell className="text-right">{trade.quantité}</TableCell>
                 <TableCell className="text-right">{formatUSD(trade.prixAchat)}</TableCell>
                 <TableCell className="text-right">{formatUSD(trade.prixVente)}</TableCell>

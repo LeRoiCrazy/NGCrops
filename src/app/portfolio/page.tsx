@@ -3,11 +3,16 @@ import { redirect } from "next/navigation";
 import { ObjectId } from "mongodb";
 import { getSilosForUser, getTradesForUser } from "@/infrastructure/silos";
 import { getLatestMarketSnapshot } from "@/application/market-snapshots";
-import { calculatePortfolioItem } from "@/lib/portfolio-calculations";
+import {
+  calculatePortfolioItem,
+  convertPricePerTonneToPerSilo,
+} from "@/lib/portfolio-calculations";
 import { SilosTable } from "@/components/portfolio/silos-table";
 import { TradesHistory } from "@/components/portfolio/trades-history";
 import { SiloForm } from "@/components/portfolio/silo-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PortfolioItemDTO, TradeDTO } from "@/types/silo";
+import { getCropDisplayConfig } from "@/lib/crops";
 
 export const metadata = {
   title: "Portfolio - NGCrops",
@@ -29,13 +34,46 @@ async function loadPortfolioData(userId: string) {
 
     // Calculate portfolio items with current prices
     const portfolioItems = silos.map((silo) => {
-      const prixActuel = snapshot?.payload.data.cerealsPrice[silo.cropName] || silo.prixAchat;
+      const prixActuelParTonne = snapshot?.payload.data.cerealsPrice[silo.cropName];
+      const prixActuel =
+        typeof prixActuelParTonne === "number"
+          ? convertPricePerTonneToPerSilo(prixActuelParTonne)
+          : silo.prixAchat;
       return calculatePortfolioItem(silo, prixActuel);
     });
 
+    const serializablePortfolioItems: PortfolioItemDTO[] = portfolioItems.map((item) => ({
+      _id: item._id,
+      cropName: item.cropName,
+      cropLabel: getCropDisplayConfig(item.cropName).label,
+      quantité: item.quantité,
+      prixAchat: item.prixAchat,
+      prixActuel: item.prixActuel,
+      prixActuelTotal: item.prixActuelTotal,
+      montantInvesti: item.montantInvesti,
+      bénéficePotentiel: item.bénéficePotentiel,
+      bénéficeApresTaxes: item.bénéficeApresTaxes,
+      pourcentGainPerte: item.pourcentGainPerte,
+      montantReçuApresTaxes: item.montantReçuApresTaxes,
+    }));
+
+    const serializableTrades: TradeDTO[] = trades.map((trade) => ({
+      _id: trade._id,
+      cropName: trade.cropName,
+      cropLabel: getCropDisplayConfig(trade.cropName).label,
+      quantité: trade.quantité,
+      prixAchat: trade.prixAchat,
+      prixVente: trade.prixVente,
+      taxeServeur: trade.taxeServeur,
+      bénéfice: trade.bénéfice,
+      dateVente: trade.dateVente instanceof Date
+        ? trade.dateVente.toISOString()
+        : new Date(trade.dateVente).toISOString(),
+    }));
+
     return {
-      portfolioItems,
-      trades,
+      portfolioItems: serializablePortfolioItems,
+      trades: serializableTrades,
       error: null,
     };
   } catch (error) {

@@ -40,3 +40,31 @@ export interface PortfolioItem extends Silo {
   pourcentGainPerte: number; // (bénéficeApresTaxes / montantInvesti) * 100
   montantReçuApresTaxes: number; // prixActuelTotal * 0.8
 }
+
+// Serializable shapes for passing data from Server Components to Client Components.
+export interface PortfolioItemDTO {
+  _id: string;
+  cropName: string;
+  cropLabel: string;
+  quantité: number;
+  prixAchat: number;
+  prixActuel: number;
+  prixActuelTotal: number;
+  montantInvesti: number;
+  bénéficePotentiel: number;
+  bénéficeApresTaxes: number;
+  pourcentGainPerte: number;
+  montantReçuApresTaxes: number;
+}
+
+export interface TradeDTO {
+  _id: string;
+  cropName: string;
+  cropLabel: string;
+  quantité: number;
+  prixAchat: number;
+  prixVente: number;
+  taxeServeur: number;
+  bénéfice: number;
+  dateVente: string;
+}
