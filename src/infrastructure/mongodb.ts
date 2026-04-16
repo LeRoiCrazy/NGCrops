@@ -17,6 +17,8 @@ async function getMongoClient() {
   return globalThis.__ngcropsMongoClientPromise;
 }
 
+export { getMongoClient };
+
 export async function getMongoDb(): Promise<Db> {
   const env = getServerEnv();
   const client = await getMongoClient();
