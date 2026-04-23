@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { auth } from "@/auth";
 import { NavBar } from "@/components/nav-bar";
 
 const geistSans = Geist({
@@ -19,11 +20,13 @@ export const metadata: Metadata = {
   description: "Dashboard simple des prix des cereals NationsGlory",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
     <html
       lang="en"
@@ -36,7 +39,7 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <NavBar />
+        {session?.user ? <NavBar /> : null}
         {children}
       </body>
     </html>
