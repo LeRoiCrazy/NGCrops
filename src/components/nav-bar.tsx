@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
@@ -94,12 +95,14 @@ export function NavBar({ session }: NavBarProps) {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-60">
-              <DropdownMenuLabel className="space-y-1">
-                <div className="text-sm font-medium text-foreground">{userName}</div>
-                <div className="text-xs font-normal text-muted-foreground">
-                  {session.user?.email ?? "Compte connecté"}
-                </div>
-              </DropdownMenuLabel>
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="space-y-1">
+                  <div className="text-sm font-medium text-foreground">{userName}</div>
+                  <div className="text-xs font-normal text-muted-foreground">
+                    {session.user?.email ?? "Compte connecté"}
+                  </div>
+                </DropdownMenuLabel>
+              </DropdownMenuGroup>
               <DropdownMenuItem onClick={() => router.push("/")}>Marché global</DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push("/portfolio")}>Mon portfolio</DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push("/profile")}>Mon profil</DropdownMenuItem>
