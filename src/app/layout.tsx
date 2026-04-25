@@ -39,7 +39,7 @@ export default async function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        {session?.user ? <NavBar /> : null}
+        {session?.user ? <NavBar session={session} /> : null}
         {children}
       </body>
     </html>

@@ -5,6 +5,20 @@ import type {
   PricePoint,
   YoxoCerealMarketResponse,
 } from "@/types/market";
+import { getCropChartColor } from "@/lib/crops";
+
+export type MarketChartRange = "7" | "14" | "30" | "all";
+
+export type MultiCropSeriesMeta = {
+  cropKey: string;
+  cropLabel: string;
+  color: string;
+};
+
+export type MultiCropChartPoint = {
+  date: string;
+  [cropKey: string]: string | number | null;
+};
 
 function clampConfidence(value: number) {
   return Math.min(100, Math.max(0, Math.round(value)));
@@ -307,6 +321,71 @@ function normalizePriceHistory(rawHistory: Record<string, number>) {
     .map(([date, value]) => ({ date, value }))
     .filter((point) => Number.isFinite(point.value))
     .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+export function rangeToMaxPoints(range: MarketChartRange) {
+  if (range === "all") {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  return Number.parseInt(range, 10);
+}
+
+export function filterPriceHistoryByRange(
+  history: PricePoint[],
+  range: MarketChartRange
+) {
+  const maxPoints = rangeToMaxPoints(range);
+
+  if (!Number.isFinite(maxPoints)) {
+    return history;
+  }
+
+  return history.slice(-maxPoints);
+}
+
+export function buildMultiCropPriceChartData(
+  items: CropMarketItem[],
+  range: MarketChartRange
+): {
+  points: MultiCropChartPoint[];
+  series: MultiCropSeriesMeta[];
+} {
+  const sortedItems = [...items].sort((a, b) =>
+    a.cropLabel.localeCompare(b.cropLabel, "fr")
+  );
+
+  const allDates = new Set<string>();
+  for (const item of sortedItems) {
+    for (const point of item.priceHistory) {
+      allDates.add(point.date);
+    }
+  }
+
+  const dates = Array.from(allDates).sort((a, b) => a.localeCompare(b));
+  const maxPoints = rangeToMaxPoints(range);
+  const selectedDates = Number.isFinite(maxPoints)
+    ? dates.slice(-maxPoints)
+    : dates;
+
+  const points: MultiCropChartPoint[] = selectedDates.map((date) => {
+    const row: MultiCropChartPoint = { date };
+
+    for (const item of sortedItems) {
+      const matchingPoint = item.priceHistory.find((point) => point.date === date);
+      row[item.cropKey] = matchingPoint?.value ?? null;
+    }
+
+    return row;
+  });
+
+  const series: MultiCropSeriesMeta[] = sortedItems.map((item) => ({
+    cropKey: item.cropKey,
+    cropLabel: item.cropLabel,
+    color: getCropChartColor(item.cropKey),
+  }));
+
+  return { points, series };
 }
 
 export function buildCropMarketItems(
