@@ -156,7 +156,7 @@ export default async function ProfilePage() {
             <div className="rounded-lg border border-border bg-background/60 p-4">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">PnL net</p>
               <p className={`mt-2 text-2xl font-semibold ${portfolioStats.netPnL >= 0 ? "text-green-500" : "text-red-500"}`}>
-                {portfolioStats.netPnL.toFixed(2)} đồng
+                ${portfolioStats.netPnL.toFixed(2)}
               </p>
             </div>
           </div>
