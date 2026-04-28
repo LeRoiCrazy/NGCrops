@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { CropCard } from "@/components/market/crop-card";
 import { MultiCropPriceChart } from "@/components/market/multi-crop-price-chart";
+import { TopVolatiles } from "@/components/market/top-volatiles";
+import { CropFilter } from "@/components/market/crop-filter";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -33,6 +35,18 @@ const RANGE_OPTIONS: Array<{ value: MarketChartRange; label: string }> = [
 
 export function MarketTabs({ server, snapshotDate, source, items }: MarketTabsProps) {
   const [range, setRange] = useState<MarketChartRange>("14");
+  const [selectedCrops, setSelectedCrops] = useState<string[]>(
+    items.map((item) => item.cropKey),
+  );
+
+  // Filter items based on selected crops
+  const filteredItems = useMemo(
+    () =>
+      items.filter((item) =>
+        selectedCrops.includes(item.cropKey),
+      ),
+    [items, selectedCrops],
+  );
 
   return (
     <>
@@ -56,7 +70,7 @@ export function MarketTabs({ server, snapshotDate, source, items }: MarketTabsPr
             <TabsTrigger value="graph">Vue graphique</TabsTrigger>
           </TabsList>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-muted-foreground">Periode</span>
             <Select value={range} onValueChange={(value) => setRange(value as MarketChartRange)}>
               <SelectTrigger size="sm" className="w-40">
@@ -70,12 +84,14 @@ export function MarketTabs({ server, snapshotDate, source, items }: MarketTabsPr
                 ))}
               </SelectContent>
             </Select>
+
+            <CropFilter items={items} selectedCrops={selectedCrops} onSelectionChange={setSelectedCrops} />
           </div>
         </div>
 
         <TabsContent value="cards">
           <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {items.map((item) => (
+            {filteredItems.map((item) => (
               <CropCard key={item.cropKey} item={item} range={range} />
             ))}
           </section>
@@ -87,9 +103,11 @@ export function MarketTabs({ server, snapshotDate, source, items }: MarketTabsPr
               <p className="mb-4 text-sm text-muted-foreground">
                 Chaque courbe represente l&apos;evolution du prix d&apos;une cereale sur la meme timeline.
               </p>
-              <MultiCropPriceChart items={items} range={range} />
+              <MultiCropPriceChart items={filteredItems} range={range} />
             </CardContent>
           </Card>
+
+          <TopVolatiles items={filteredItems} range={range} />
         </TabsContent>
       </Tabs>
     </>
