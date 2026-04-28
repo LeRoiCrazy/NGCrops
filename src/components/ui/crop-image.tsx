@@ -48,6 +48,7 @@ export function CropImage({
       alt={alt}
       width={width}
       height={height}
+      unoptimized={true}
       className={className}
       onError={handleError}
     />

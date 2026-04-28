@@ -5,6 +5,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -41,7 +42,9 @@ export function CropFilter({ items, selectedCrops, onSelectionChange }: CropFilt
         🌾 Cereales ({selectedCrops.length}/{allCropKeys.length})
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
-        <DropdownMenuLabel>Filtrer par cereales</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Filtrer par cereales</DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         
         <DropdownMenuCheckboxItem
