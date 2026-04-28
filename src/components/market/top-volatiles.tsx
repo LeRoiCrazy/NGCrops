@@ -35,7 +35,7 @@ export function TopVolatiles({ items, range }: TopVolatilesProps) {
                 <div className="space-y-0.5">
                   <p className="text-sm font-medium text-foreground">{item.cropLabel}</p>
                   <p className="text-xs text-muted-foreground">
-                    {item.priceMin.toFixed(0)} → {item.priceMax.toFixed(0)} đ / t
+                    {item.priceMin.toFixed(0)} → {item.priceMax.toFixed(0)} $ / t
                   </p>
                 </div>
               </div>
