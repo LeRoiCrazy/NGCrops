@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { getUserById } from "@/infrastructure/users";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { GlobalSignOutButton } from "@/components/auth/global-sign-out-button";
+import { getPortfolioStats } from "@/lib/portfolio-stats";
 
 export const metadata = {
   title: "Profil - NGCrops",
@@ -75,6 +76,14 @@ export default async function ProfilePage() {
     profile = null;
   }
 
+  // Get portfolio stats
+  let portfolioStats = { openSilos: 0, closedTrades: 0, netPnL: 0 };
+  try {
+    portfolioStats = await getPortfolioStats(userId);
+  } catch {
+    // Stats not available
+  }
+
   const userName = profile?.name || session.user.name || "Compte NGCrops";
   const userEmail = profile?.email || session.user.email || "Email indisponible";
   const userAvatar = profile?.avatar || session.user.image || undefined;
@@ -123,6 +132,32 @@ export default async function ProfilePage() {
             <div className="rounded-lg border border-border bg-background/60 p-4">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">Membre depuis</p>
               <p className="mt-2 text-sm font-medium text-foreground">{memberSince}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-card/70 border-green-400/30">
+        <CardHeader>
+          <CardTitle className="text-green-500">Statistiques du portfolio</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-lg border border-border bg-background/60 p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Silos ouverts</p>
+              <p className="mt-2 text-2xl font-semibold text-foreground">{portfolioStats.openSilos}</p>
+            </div>
+
+            <div className="rounded-lg border border-border bg-background/60 p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Trades fermés</p>
+              <p className="mt-2 text-2xl font-semibold text-foreground">{portfolioStats.closedTrades}</p>
+            </div>
+
+            <div className="rounded-lg border border-border bg-background/60 p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">PnL net</p>
+              <p className={`mt-2 text-2xl font-semibold ${portfolioStats.netPnL >= 0 ? "text-green-500" : "text-red-500"}`}>
+                {portfolioStats.netPnL.toFixed(2)} đồng
+              </p>
             </div>
           </div>
         </CardContent>
