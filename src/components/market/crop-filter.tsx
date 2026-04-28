@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getGroupedCropOptions } from "@/lib/crops";
 import type { CropMarketItem } from "@/types/market";
 
 type CropFilterProps = {
@@ -19,6 +20,7 @@ type CropFilterProps = {
 };
 
 export function CropFilter({ items, selectedCrops, onSelectionChange }: CropFilterProps) {
+  const cropGroups = getGroupedCropOptions();
   const allCropKeys = items.map((item) => item.cropKey);
   const isAllSelected = selectedCrops.length === allCropKeys.length;
 
@@ -57,14 +59,27 @@ export function CropFilter({ items, selectedCrops, onSelectionChange }: CropFilt
         
         <DropdownMenuSeparator />
 
-        {items.map((item) => (
-          <DropdownMenuCheckboxItem
-            key={item.cropKey}
-            checked={selectedCrops.includes(item.cropKey)}
-            onCheckedChange={() => toggleCrop(item.cropKey)}
-          >
-            {item.cropLabel || item.cropKey}
-          </DropdownMenuCheckboxItem>
+        {cropGroups.map((group, groupIndex) => (
+          <DropdownMenuGroup key={group.label}>
+            <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
+              {group.label}
+            </DropdownMenuLabel>
+            {group.options.map((cropOption) => {
+              const item = items.find((i) => i.cropKey === cropOption.value);
+              if (!item) return null;
+              
+              return (
+                <DropdownMenuCheckboxItem
+                  key={cropOption.value}
+                  checked={selectedCrops.includes(cropOption.value)}
+                  onCheckedChange={() => toggleCrop(cropOption.value)}
+                >
+                  {cropOption.label}
+                </DropdownMenuCheckboxItem>
+              );
+            })}
+            {groupIndex < cropGroups.length - 1 && <DropdownMenuSeparator />}
+          </DropdownMenuGroup>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
