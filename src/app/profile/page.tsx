@@ -5,9 +5,9 @@ import { auth } from "@/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { getUserById } from "@/infrastructure/users";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { GlobalSignOutButton } from "@/components/auth/global-sign-out-button";
 
 export const metadata = {
   title: "Profil - NGCrops",
@@ -148,8 +148,9 @@ export default async function ProfilePage() {
             </div>
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row">
             <SignOutButton />
+            <GlobalSignOutButton />
           </div>
         </CardContent>
       </Card>
