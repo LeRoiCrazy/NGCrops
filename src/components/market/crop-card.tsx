@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -14,6 +12,7 @@ import {
 } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { PriceChart } from "@/components/market/price-chart";
+import { CropImage } from "@/components/ui/crop-image";
 import type { CropMarketItem } from "@/types/market";
 import type { MarketChartRange } from "@/lib/market";
 import { filterPriceHistoryByRange } from "@/lib/market";
@@ -73,17 +72,16 @@ export function CropCard({ item, range }: CropCardProps) {
             <CardDescription>Crop</CardDescription>
             <CardTitle className="text-base sm:text-lg">{item.cropLabel}</CardTitle>
           </div>
-          {item.cropImage ? (
-            <div className="relative h-7.75 w-17 overflow-hidden rounded-md border border-border bg-black/20">
-              <Image
-                src={item.cropImage}
-                alt={item.cropLabel}
-                fill
-                sizes="68px"
-                className="object-contain"
-              />
-            </div>
-          ) : null}
+          <div className="h-7.75 w-17 overflow-hidden rounded-md border border-border bg-black/20">
+            <CropImage
+              src={item.cropImage}
+              alt={item.cropLabel}
+              cropLabel={item.cropLabel}
+              width={68}
+              height={31}
+              className="h-full w-full object-contain"
+            />
+          </div>
         </div>
       </CardHeader>
 
