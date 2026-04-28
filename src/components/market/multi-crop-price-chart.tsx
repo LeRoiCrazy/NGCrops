@@ -73,7 +73,7 @@ export function MultiCropPriceChart({ items, range }: MultiCropPriceChartProps) 
                       : NaN;
 
                 return [
-                  Number.isFinite(numeric) ? `${numeric.toFixed(2)}$ / t` : "N/A",
+                  Number.isFinite(numeric) ? `${numeric.toFixed(2)}$ / t ` : "N/A",
                   String(name),
                 ];
               }}
