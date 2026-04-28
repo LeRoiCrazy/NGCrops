@@ -5,8 +5,7 @@ import {
   getLatestMarketSnapshot,
   syncLatestMarketSnapshot,
 } from "@/application/market-snapshots";
-import { CropCard } from "@/components/market/crop-card";
-import { Badge } from "@/components/ui/badge";
+import { MarketTabs } from "@/components/market/market-tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buildCropMarketItems } from "@/lib/market";
@@ -99,28 +98,12 @@ async function MarketContent() {
 
   return (
     <>
-      <section className="rounded-2xl border border-border bg-card/80 p-5 backdrop-blur">
-        <div className="mb-3 flex flex-wrap gap-2">
-          <Badge>NGCrops</Badge>
-          <Badge variant="outline">Serveur: {result.server}</Badge>
-          <Badge variant="secondary">Snapshot: {result.snapshotDate}</Badge>
-          <Badge variant="outline">
-            Source: {result.source === "mongodb" ? "MongoDB" : "Yoxo live"}
-          </Badge>
-        </div>
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Marche global des cereals
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Recommandations simples basees uniquement sur la position du prix dans sa plage recente.
-        </p>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {result.items.map((item) => (
-          <CropCard key={item.cropKey} item={item} />
-        ))}
-      </section>
+      <MarketTabs
+        server={result.server}
+        snapshotDate={result.snapshotDate}
+        source={result.source}
+        items={result.items}
+      />
     </>
   );
 }

@@ -18,21 +18,12 @@ export default async function SignInPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-2">NGCrops</h1>
-          <p className="text-muted-foreground">
-            Portfolio de trading agricole
-          </p>
-        </div>
-
-        {/* Card */}
+      <div className="max-w-md w-full">
         <div className="bg-card border border-border rounded-lg p-8 space-y-6">
           <div>
-            <h2 className="text-2xl font-bold mb-2">Se connecter</h2>
+            <h1 className="text-2xl font-bold mb-2">Se connecter</h1>
             <p className="text-muted-foreground text-sm">
-              Connecte-toi avec ton compte Discord pour commencer à gérer ton portfolio.
+              Connecte-toi avec ton compte Discord pour accéder à NGCrops.
             </p>
           </div>
 
@@ -51,17 +42,8 @@ export default async function SignInPage() {
             </Button>
           </form>
 
-          <div className="text-center text-xs text-muted-foreground">
-            <p>
-              En cliquant sur continuer, tu acceptes nos conditions d'utilisation.
-            </p>
-          </div>
-        </div>
-
-        {/* Info */}
-        <div className="bg-muted/50 border border-border rounded-lg p-4">
-          <p className="text-sm text-muted-foreground">
-            Tes données sont stockées de manière sécurisée et liées à ton compte Discord.
+          <p className="text-center text-xs text-muted-foreground">
+            En cliquant sur continuer, tu acceptes nos conditions d'utilisation.
           </p>
         </div>
       </div>

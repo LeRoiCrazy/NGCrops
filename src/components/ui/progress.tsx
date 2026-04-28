@@ -9,11 +9,20 @@ function Progress({
   children,
   value,
   indicatorClassName,
+  getAriaValueText,
   ...props
 }: ProgressPrimitive.Root.Props & { indicatorClassName?: string }) {
+  const stableAriaValueText: NonNullable<ProgressPrimitive.Root.Props["getAriaValueText"]> =
+    getAriaValueText ??
+    ((_formattedValue, numericValue) =>
+      typeof numericValue === "number" && Number.isFinite(numericValue)
+        ? `${Math.round(numericValue)}%`
+        : "0%");
+
   return (
     <ProgressPrimitive.Root
       value={value}
+      getAriaValueText={stableAriaValueText}
       data-slot="progress"
       className={cn("flex flex-wrap gap-3", className)}
       {...props}

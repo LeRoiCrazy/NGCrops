@@ -3,6 +3,36 @@ type CropDisplayConfig = {
   image?: string;
 };
 
+const CHART_COLORS = [
+  "#38bdf8",
+  "#22c55e",
+  "#f59e0b",
+  "#ef4444",
+  "#a78bfa",
+  "#14b8a6",
+  "#fb7185",
+  "#84cc16",
+  "#f97316",
+  "#06b6d4",
+  "#8b5cf6",
+  "#eab308",
+];
+
+const CROP_COLOR_MAP: Record<string, string> = {
+  soybean: "#22c55e",
+  sunflower: "#f59e0b",
+  oats: "#38bdf8",
+  wheat: "#eab308",
+  barley: "#14b8a6",
+  corn: "#f97316",
+  rye: "#a78bfa",
+  sorgho: "#ef4444",
+  fonio: "#84cc16",
+  kamut: "#8b5cf6",
+  arcticoats: "#06b6d4",
+  glazedspelt: "#fb7185",
+};
+
 export type CropOption = {
   value: string;
   label: string;
@@ -93,4 +123,23 @@ export function getCropOptions(): CropOption[] {
 
 export function getGroupedCropOptions(): CropOptionGroup[] {
   return CROP_OPTION_GROUPS;
+}
+
+function hashCropKey(cropKey: string) {
+  let hash = 0;
+  for (let index = 0; index < cropKey.length; index += 1) {
+    hash = (hash << 5) - hash + cropKey.charCodeAt(index);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+export function getCropChartColor(cropKey: string): string {
+  const definedColor = CROP_COLOR_MAP[cropKey];
+
+  if (definedColor) {
+    return definedColor;
+  }
+
+  return CHART_COLORS[hashCropKey(cropKey) % CHART_COLORS.length];
 }

@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -14,10 +12,14 @@ import {
 } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { PriceChart } from "@/components/market/price-chart";
+import { CropImage } from "@/components/ui/crop-image";
 import type { CropMarketItem } from "@/types/market";
+import type { MarketChartRange } from "@/lib/market";
+import { filterPriceHistoryByRange } from "@/lib/market";
 
 type CropCardProps = {
   item: CropMarketItem;
+  range: MarketChartRange;
 };
 
 function formatPercent(value: number | null) {
@@ -59,7 +61,9 @@ function recommendationBadgeVariant(signal: CropMarketItem["recommendation"]["si
   return "outline";
 }
 
-export function CropCard({ item }: CropCardProps) {
+export function CropCard({ item, range }: CropCardProps) {
+  const filteredPriceHistory = filterPriceHistoryByRange(item.priceHistory, range);
+
   return (
     <Card className="bg-card/80">
       <CardHeader className="pb-2">
@@ -68,17 +72,16 @@ export function CropCard({ item }: CropCardProps) {
             <CardDescription>Crop</CardDescription>
             <CardTitle className="text-base sm:text-lg">{item.cropLabel}</CardTitle>
           </div>
-          {item.cropImage ? (
-            <div className="relative h-[31px] w-[68px] overflow-hidden rounded-md border border-border bg-black/20">
-              <Image
-                src={item.cropImage}
-                alt={item.cropLabel}
-                fill
-                sizes="68px"
-                className="object-contain"
-              />
-            </div>
-          ) : null}
+          <div className="h-7.75 w-17 overflow-hidden rounded-md border border-border bg-black/20">
+            <CropImage
+              src={item.cropImage}
+              alt={item.cropLabel}
+              cropLabel={item.cropLabel}
+              width={68}
+              height={31}
+              className="h-full w-full object-contain"
+            />
+          </div>
         </div>
       </CardHeader>
 
@@ -136,7 +139,7 @@ export function CropCard({ item }: CropCardProps) {
           <p className="text-xs uppercase tracking-wide text-muted-foreground">
             Evolution des prix
           </p>
-          <PriceChart data={item.priceHistory} cropLabel={item.cropLabel} />
+          <PriceChart data={filteredPriceHistory} cropLabel={item.cropLabel} />
         </div>
       </CardContent>
     </Card>
